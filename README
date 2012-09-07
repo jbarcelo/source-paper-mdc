@@ -1,0 +1,4 @@
+This are the scripts and source code that can be used to reproduce the results of the paper "Modelling a Decentralized Constraint Satisfaction Solver for Collision-Free Channel Access"
+
+The code is not profusely commented, as it closely follows the steps described in the paper.
+
