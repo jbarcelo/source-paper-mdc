@@ -1,0 +1,35 @@
+/*
+This script computes the average number successful transmission
+per schedule round for different numbers of contenders. The number 
+of contenders ranges from N=2 to N=NMAX. The number of slots in 
+each round is 8
+*/
+NMAX:8;
+B:8;
+epsilon:1/10;
+s(B,N,d,j):=sum(binomial(d,i)*binomial(N-d,j-i)*(B-d)!*max((B-j),1)^(N-d+i-j)/((B-d-(j-i))!*B^(N-d)),i,max(0,j+d-N),min(d,j));
+psi(B,N,d,delta):=sum((-1)^(delta+j)*binomial(j,delta)*s(B,N,d,j),j,delta,N);
+
+for N:2 step 1 while (N<=NMAX) do
+  (
+  psimatrix:zeromatrix(N+1,N+1),
+  for d:0 step 1 while (d<=N) do
+    for delta:0 step 1 while (delta<=N) do
+      (
+      psimatrix[d+1,delta+1]:psi(B,N,d,delta)
+      ),
+  
+  epsilonmatrix:zeromatrix(N+1,N+1),
+  for d:0 step 1 while (d<=N) do
+    for delta:0 step 1 while (delta<=N) do
+      (
+      epsilonmatrix[d+1,delta+1]:psimatrix[d+1][delta+1]*(1-epsilon)^delta+sum(binomial(i,delta)*epsilon^(i-delta)*(1-epsilon)^delta*psimatrix[d+1][i+1],i,delta+1,N)
+      ),
+  
+  initialstate:ematrix(1,N+1,1,1,1),
+  
+  for i:0 step 1 while (i<=100) do
+    initialstate:initialstate . epsilonmatrix,
+  
+  print(float(initialstate) . genmatrix( lambda([i,j], i-1), N+1,1))
+  );  

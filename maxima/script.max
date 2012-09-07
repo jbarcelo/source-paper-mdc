@@ -1,0 +1,22 @@
+/*
+This script anallytically computes the average number
+of rounds requirede to reach collision free operation
+when the number of contenders is N and the number of 
+slots in the schedule is 8
+*/
+
+N:8;
+B:8;
+    s(B,N,d,j):=sum(binomial(d,i)*binomial(N-d,j-i)*(B-d)!*max((B-j),1)^(N-d+i-j)/((B-d-(j-i))!*B^(N-d)),i,max(0,j+d-N),min(d,j));
+    psi(B,N,d,delta):=sum((-1)^(delta+j)*binomial(j,delta)*s(B,N,d,j),j,delta,N);
+qmatrix:zeromatrix(N,N);
+for d:0 step 1 while (d<N) do
+  for delta:0 step 1 while (delta<N) do
+    (
+    qmatrix[d+1,delta+1]:psi(B,N,d,delta)
+    );
+qmatrix;
+onesvector:zeromatrix(N,1)+1;
+floatqmatrix:float(qmatrix);
+result_vector:invert(ident(N)-floatqmatrix) . onesvector;
+result_vector[1];
